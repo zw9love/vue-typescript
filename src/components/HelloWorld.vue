@@ -2,6 +2,7 @@
   <div class="hello">
     <h1>{{ msg1 | lowercase}}</h1>
     <h1>{{ msg2 | uppercase}}</h1>
+    <h1>{{ propMessage1 | uppercase}}</h1>
     <h2>Essential Links</h2>
     <ul>
       <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
@@ -18,7 +19,21 @@
       <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
     </ul>
-    <button @click="myTest(111)">点击我测试下</button>
+    <div>
+      <h3>{{num}}</h3>
+      <button @click="addToCount">点我增加(@emit)</button>
+    </div>
+    <div>
+      <h3>{{num}}</h3>
+      <button @click="resetCount">点我重置(@emit)</button>
+    </div>
+    <div>
+      <h3>{{checked}}</h3>
+      <button @click="checkedReverse(!checked)">点我取反(@model)</button>
+    </div>
+    <div style="margin:20px 0">
+      <button @click="mytest">点击测试test事件</button>
+    </div>
   </div>
 </template>
 
@@ -39,36 +54,54 @@ interface obj {
   age: number;
 }
 
-@Component({
-  name: "helloworld",
-  components: {},
-  created() {
-    // this.$delete(this.obj,'name')
-    // console.log(this.obj) // {age: 20}
-    // console.log(this.$set);
-    // console.log(this.$delete); 
-    // console.log(this.$filter) // undefined
-    // console.log(this.$use) // undefined
-    // console.log(this.version) // undefined
-    // console.log(this.$compile) // undefined
-    // console.log(this.$mixin) // undefined
-  },
-  data() {
-    return {
-      msg1: "AAABBBCCCDDD",
-      msg2: "eeefffggghhh",
-      obj: { name: "daxiong", age: 20 }
-    };
-  },
-  methods: {
-    myTest(msg?: string, obj?: obj): void {
-      console.log(msg);
-    }
+@Component
+export default class HelloWorld extends Vue {
+  @Prop() 
+  propMessage1: string;
+  propMessage2: string;
+
+  @Provide() 
+  num = 0;
+  msg1 = "AAAAAA";
+  msg2 = "bbbbbb";
+  injectMessage1 = "cccccc";
+
+  // @Inject()
+  // injectMessage1 = string // tslint编译过不去
+
+  @Emit()
+  addToCount() {
+    console.log(6666)
+    // this.num++;
   }
-})
 
+  @Emit()
+  resetCount() {
+    this.num = 0;
+  }
 
-export default class HelloWorld extends Vue {}
+  @Emit()
+  checkedReverse(val){
+    this.$emit('change', val)
+  }
+
+  @Emit()
+  mytest(){
+    this.$emit('test', 999999)
+  }
+
+  created() {
+    console.log('我是helloworld组件！！！')
+    this.$emit('change', true)
+  }
+
+  @Model('change') checked: boolean
+
+  @Watch("num")
+  onNumChanged(val: string, oldVal: string) {
+    console.log("num的新值为：" + val);
+  }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
